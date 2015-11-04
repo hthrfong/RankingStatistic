@@ -16,7 +16,9 @@ linkcolor=red,
 filecolor=red,
 citecolor=blue}
 \usepackage{epsfig}
-\usepackage{bm}% bold math                                                                                                                                      
+\usepackage{bm}% bold math      
+
+\newcommand{\tjtk}{\rho(\vec{t}_j\cdot\vec{t}_k)}                                                                                                      
 
 \title{Title}
 \author{Author}
@@ -30,10 +32,110 @@ citecolor=blue}
 
 \section{}
 
+Given a signal $\vec{s}$ with parameters $\vec\theta$:
    \begin{equation}
-   P(\mathrm{bin i} | \mathrm{signal with }\theta) = \sum_{\mathrm{templates in bin i}}
+   \vec\theta = \{m_1,m_2,\chi,\rho\}
+   \end{equation}
+where $m_1$ and $m_2$ are the masses, $\chi$ is the effective spin, and $\rho$ is the nominal signal-to-noise-ratio.
+
+Probability that the signal $\vec{s}$ is recovered in a chirp mass bin $i$:
+   \begin{equation}
+   P(\text{bin $i$} | \vec{s}(\vec\theta)) = \sum_{\text{$k$ templates in bin $i$}} P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta))
+   \end{equation}
+where $P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta))$ is the probability that the signal is recovered by some template $\vec{t}_k$. $\vec{t}_k$ is the $k$th template that lies on the unit sphere, and $|\vec{t}_k| = 1$.
+
+   \begin{align}
+   \vec{d} &= \vec{n} + \vec{s} \\
+   \rho_{obs,k}\vec{t}_k &= \vec{n} + \rho\vec{t}_j
+   \end{align}
+
+Here, we assume that that signal $\vec{s}$ is described by one of the templates in the bank. $\rho_{obs,k}$ is the observed signal-to-noise ratio.
+
+Isolating for $\vec{n}$, we can solve for the squared magnitude $|\vec{n}|^2$:
+
+   \begin{align}
+   \vec{n} &= \rho\vec{t}_j - \rho_{obs,k}\vec{t}_k \\
+   |\vec{n}|^2 &= (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k) \cdot (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k)\\
+               &= \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\tjtk
+   \label{eqn:n_squaredmagnitude}
+   \end{align}
+   
+$\vec{n}$ is Gaussian distributed with constant variance of 1, so the probability density function for $N$ dimensions is given as
+
+   \begin{equation}
+   f(|\vec{n}|) = \frac{1}{(2\pi)^{N/2}}e^{-\frac{1}{2}|\vec{n}|^2}
    \end{equation}
 
-\subsection{}
+We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$. If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
+
+   \begin{equation}
+   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega
+   \end{equation}
+
+Moving constant terms outside the integral and substituting in Equation \ref{eqn:n_squaredmagnitude}, we get
+
+   \begin{align}
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} \int_0^\infty  e^{\frac{1}{2} \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\tjtk  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \\
+  &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{\frac{1}{2} (\rho_{obs,k} - \tjtk)^2  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k}
+   \end{align}
+Let $x = \rho_{obs,k} - \tjtk$,
+
+   \begin{align}
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{\frac{1}{2} x^2  } {(x+\tjtk)^{N-1}} dx \\
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\tjtk}^\infty  e^{\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^n(\tjtk)^{N-1-n} } dx \\
+   &= \frac{\Delta\Omega(\tjtk)^{N-1}}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\tjtk)^{-n} \int_{-\tjtk}^\infty e^{\frac{1}{2} x^2  } x^n  dx
+   \end{align}
+
+I want to find out at what $n$ is the factor $\binom{N-1}{n} (\tjtk)^{-n}$ maximised.
+
+   \begin{align}
+   y = \binom{N-1}{n}(\tjtk)^{-n} &= \frac{(N-1)!}{n!(N-1-n)!} (\tjtk)^{-n} \\
+   y & \approx \frac{N!}{n!(N-n)!} (\tjtk)^{-n}
+   \end{align}
+since $N \gg 1$. If I further assume that $N$, $n$, and $N-n \ge 10^{5}$, I can use Stirling's approximation $\log n \approx n\log n - n$ and maintain 99.999\% accuracy (\href{http://www.luc.edu/faculty/dslavsk/courses/phys328/classnotes/Stirling.pdf}{link here}).
+
+   \begin{align}
+   \log y &= \log(N-1)! - \log n! - \log(N-1-n)! -n\log(\tjtk) \\
+   &\approx \log N! - \log n! - \log(N-n)! - n\log(\tjtk) \\
+   &\approx N\log N - N - n\log n + n \\ 
+   &\notag \qquad - (N-n)\log(N-n) + (N-n)  -n\log\(\tjtk) \\
+   &\approx N\log N - n\log n -(N-n)\log(N-n) -n\log(\tjtk)
+   \end{align}
+
+   \begin{align}
+   \frac{d(\log y)}{dn} &= -\frac{n}{n} - \log n + \frac{N-n}{N-n} + \log(N-n) - \log (\tjtk)\\
+   0 &= \log\Big\{\frac{(N-n)}{n\tjtk}\Big\}\\
+   1 &= \frac{N-n}{n\tjtk}\\
+   n &= \frac{N}{\tjtk+1}
+   \end{align}
+For Stirling's approximation to hold, I require:
+
+   \begin{equation}
+   \frac{10^5}{N-10^5} \le \tjtk \le \frac{N-10^5}{10^5}
+   \end{equation}
+For $N=10^9$, this gives $\frac{1}{9999} \le \tjtk \le 9999$, which is well within the expected values for $\tjtk$.
+
+Therefore, the factor $\binom{N-1}{n} (\tjtk)^{-n}$ is maximised when $ n = {N}/({\tjtk+1})$. This gives:
+
+   \begin{equation}
+   \binom{N-1}{\frac{N}{\tjtk+1}} (\tjtk)^{-\frac{N}{\tjtk+1}} \approx \frac{N!}{\frac{N}{\tjtk+1}!\Big(N-\frac{N}{\tjtk+1}!\Big)} \tjtk^{-\frac{N}{\tjtk+1}}
+   \end{equation}
+
+Using Stirling's approximation $n! \approx \sqrt{2\pi n} (n/e)^n$:
+
+   \begin{align}
+   =& \Big\{ {2\pi N}^{1/2}{\Big(\frac{N}{e}\Big)}^N  \Big\} 
+      \Big\{ {2\pi\frac{N}{\tjtk+1}}^{-\frac{1}{2}} \Big(\frac{N}{\tjtk+1}\frac{1}{e}\Big)^{-\frac{N}{\tjtk+1}}  \Big\} \\
+   \notag & \qquad 
+      \Big\{ {2\pi\frac{N\tjtk}{\tjtk+1}}^{-\frac{1}{2}} \Big(\frac{N\tjtk}{\tjtk+1}\frac{1}{e}\Big)^{-\frac{N\tjtk}{\tjtk+1}} \Big\} \tjtk^{-\frac{N}{\tjtk+1}}\\
+   =& \frac{(\tjtk+1)^{N+1}}{\sqrt{2\pi N}} (\tjtk)^{-\frac{N\tjtk}{\tjtk+1}-\frac{1}{2}} (\tjtk)^{-\frac{N}{\tjtk+1}} \\
+   =& \frac{(\tjtk+1)^{N+1}}{\sqrt{2\pi N}} (\tjtk)^{-\frac{1}{2}} (\tjtk)^{-\frac{N\tjtk -N}{\tjtk+1}}\\
+   =& \frac{(\tjtk+1)^{N+1}}{\sqrt{2\pi N \tjtk}} (\tjtk)^{-N}\\
+   \approx& \frac{(\tjtk+1)^{N}}{\tjtk} \frac{1}{\sqrt{2\pi N \tjtk}}
+   \end{align}
+Then:
+   \begin{equation}
+   \max\Big( \binom{N-1}{n} (\tjtk)^{-n}\Big) \approx \frac{(\tjtk+1)^N}{\sqrt{2\pi(\tjtk)^{3}N}}
+   \end{equation}
 
 \end{document}
