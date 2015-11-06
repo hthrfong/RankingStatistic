@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[normalem]{ulem} % for strikeout \sout{...}                                                                                                          
 \usepackage{amsmath, amsfonts, amssymb}
+\usepackage{comment}
 
 \usepackage{array}
 \usepackage{times}
@@ -18,7 +19,9 @@ citecolor=blue}
 \usepackage{epsfig}
 \usepackage{bm}% bold math      
 
-\newcommand{\tjtk}{\rho(\vec{t}_j\cdot\vec{t}_k)}                                                                                                      
+\newcommand{\ptjtk}{\rho(\vec{t}_j\cdot\vec{t}_k)}     
+\newcommand{\tjtk}{(\vec{t}_j\cdot\vec{t}_k)}                                                                                                      
+                                                                                                 
 
 \title{Title}
 \author{Author}
@@ -56,7 +59,7 @@ Isolating for $\vec{n}$, we can solve for the squared magnitude $|\vec{n}|^2$:
    \begin{align}
    \vec{n} &= \rho\vec{t}_j - \rho_{obs,k}\vec{t}_k \\
    |\vec{n}|^2 &= (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k) \cdot (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k)\\
-               &= \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\tjtk
+               &= \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\ptjtk
    \label{eqn:n_squaredmagnitude}
    \end{align}
    
@@ -69,23 +72,91 @@ $\vec{n}$ is Gaussian distributed with constant variance of 1, so the probabilit
 We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$. If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
 
    \begin{equation}
-   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega
+   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}{\sum_{\vec{t}_k} \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
+   \label{eqn:prob_s_recovered_by_tk}
    \end{equation}
 
-Moving constant terms outside the integral and substituting in Equation \ref{eqn:n_squaredmagnitude}, we get
+Let's deal with the numerator in Equation \ref{eqn:prob_s_recovered_by_tk} first. Moving constant terms outside the integral and substituting in Equation \ref{eqn:n_squaredmagnitude}, we get
 
    \begin{align}
-   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} \int_0^\infty  e^{\frac{1}{2} \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\tjtk  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \\
-  &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{\frac{1}{2} (\rho_{obs,k} - \tjtk)^2  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k}
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} \int_0^\infty  e^{\frac{1}{2} \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\ptjtk  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \\
+  &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{-\frac{1}{2} (\rho_{obs,k} - \ptjtk)^2  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k}
    \end{align}
-Let $x = \rho_{obs,k} - \tjtk$,
+Let $x = \rho_{obs,k} - \ptjtk$,
 
    \begin{align}
-   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{\frac{1}{2} x^2  } {(x+\tjtk)^{N-1}} dx \\
-   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\tjtk}^\infty  e^{\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^n(\tjtk)^{N-1-n} } dx \\
-   &= \frac{\Delta\Omega(\tjtk)^{N-1}}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\tjtk)^{-n} \int_{-\tjtk}^\infty e^{\frac{1}{2} x^2  } x^n  dx
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{-\frac{1}{2} x^2  } {(x+\ptjtk)^{N-1}} dx \\
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^n(\ptjtk)^{N-1-n} } dx \\
+   &= \frac{\Delta\Omega(\ptjtk)^{N-1}}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int_{-\ptjtk}^\infty e^{-\frac{1}{2} x^2  } x^n  dx
    \end{align}
 
+We can do the same for the denominator, and cancel out the constants. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
+   
+   \begin{equation}
+   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n }
+   \end{equation}
+
+We argue that for very large $N$, the dominant term in the denominator is in the case $\vec{t}_k = \vec{t}_j$, such that $\tjtk = 1$. We also know the indefinite integral $\int e^{ax^r}x^{b-1} = -(1/r) x^b (-ax^r)^{-b/r} \Gamma(b/r,-ax^r)$ (link \href{http://functions.wolfram.com/ElementaryFunctions/Exp/21/01/02/01/01/08/0001/}{here}). Therefore, Equation \ref{eqn:prob_s_recovered_by_tk} becomes:
+
+   \begin{align}
+   &=  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } 
+   { e^{-\frac{1}{2}\rho^2} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n } \\
+   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } 
+   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n } \\
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
+   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\ptjtk^2\Big) } 
+   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) }
+   \end{align}
+   
+Looking at the denominator,
+   
+   \begin{align}
+   \frac{d}{dN} &= \lim_{N_1\rightarrow N_2} \frac{ \sum_{n=0}^{N_2-1} \frac{1}{n!(N_2-n-1)!} \rho^{-n} 2^{n/2} \Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) 
+   - \sum_{n=0}^{N_1-1} \frac{1}{n!(N_1-n-1)!} \rho^{-n} 2^{n/2} \Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) }
+   {N_2-N_1} \\
+   &\stackrel{N_1 = N_2-1}{=} \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(\frac{1}{(N_2-n-1)!} - \frac{1}{(N_2-n-2)!} \Big) \\
+   \notag & \qquad\qquad
+   + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
+   &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(\frac{1}{(N_2-n-1)!} - \frac{N_2-n-1}{(N_2-n-1)!} \Big) \\
+   \notag & \qquad\qquad
+   + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
+   &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(\frac{-(N_2-n-2)}{(N_2-n-1)!} \Big) \\
+   \notag & \qquad\qquad
+   + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
+   \end{align}
+   
+We can show that the first term goes to zero {\bf NEED TO PROVE THIS}, which leaves us with the second term only. The same can be done for the numerator. Combining numerator and denominator together, we get:
+
+   \begin{align}
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \frac{1}{(N-1)!} (\ptjtk)^{-(N-1)} \Big[ 2^{(N-1)/2} \Gamma \Big(\frac{N}{2},\frac{(\ptjtk)^2}{2}\Big) \Big] } 
+   { \frac{1}{(N-1)!} \rho^{-(N-1)} \Big[ 2^{(N-1)/2} \Gamma \Big(\frac{N}{2},\frac{\rho^2}{2}\Big) \Big] } \\
+   &= e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \Gamma \Big(\frac{N}{2},\frac{(\ptjtk)^2}{2}\Big) } 
+   { \Gamma \Big(\frac{N}{2},\frac{\rho^2}{2}\Big) } 
+   \end{align}
+   
+Can use this special value of $\Gamma(n,z) = (n-1)!e^{-z}\sum^{n-1}_{m=0} \frac{z^m}{m!}$ (link \href{http://functions.wolfram.com/GammaBetaErf/Gamma2/03/01/02/0007/}{here} and \href{https://en.wikipedia.org/wiki/Incomplete_gamma_function#Special_values}{here}).
+
+   \begin{align}
+   &= e^{\frac{1}{2}\rho^2\tjtk^2} \frac{(\frac{N}{2}-1)!e^{-(\ptjtk)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{(\ptjtk)^2}{2}\Big)^{n}\frac{1}{n!} } 
+   {(\frac{N}{2}-1)!e^{-(\rho)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{\rho^2}{2}\Big)^{n}\frac{1}{n!} } \\
+   &= e^{\frac{1}{2}\rho^2\tjtk^2} e^{\frac{1}{2}\rho^2(1-\tjtk^2)}
+   \frac{\sum^{N/2-1}_{n=0} \Big(\frac{(\ptjtk)^2}{2}\Big)^{n}\frac{1}{n!} } 
+   {\sum^{N/2-1}_{n=0} \Big(\frac{\rho^2}{2}\Big)^{n}\frac{1}{n!} } \\
+   &= \lim_{N\rightarrow\infty} e^{\frac{1}{2}\rho^2} \frac{e^{\frac{1}{2}(\ptjtk)^2}}{e^{\frac{1}{2}\rho^2}} \\
+   & = e^{\frac{1}{2}(\ptjtk)^2} 
+   \end{align}
+   
+Therefore,
+
+   \begin{equation}
+   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = e^{\frac{1}{2}(\ptjtk)^2}
+   \end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{comment}
 I want to find out at what $n$ is the factor $\binom{N-1}{n} (\tjtk)^{-n}$ maximised.
 
    \begin{align}
@@ -137,5 +208,9 @@ Then:
    \begin{equation}
    \max\Big( \binom{N-1}{n} (\tjtk)^{-n}\Big) \approx \frac{(\tjtk+1)^N}{\sqrt{2\pi(\tjtk)^{3}N}}
    \end{equation}
+\end{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
