@@ -72,14 +72,15 @@ $\vec{n}$ is Gaussian distributed with constant variance of 1, so the probabilit
 We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$. If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
 
    \begin{equation}
-   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}{\sum_{\vec{t}_k} \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
+   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
+   {\sum_{\vec{t}_k} \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
    \label{eqn:prob_s_recovered_by_tk}
    \end{equation}
 
 Let's deal with the numerator in Equation \ref{eqn:prob_s_recovered_by_tk} first. Moving constant terms outside the integral and substituting in Equation \ref{eqn:n_squaredmagnitude}, we get
 
    \begin{align}
-   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} \int_0^\infty  e^{\frac{1}{2} \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\ptjtk  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \\
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} \int_0^\infty  e^{-\frac{1}{2}( \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\ptjtk)  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \\
   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{-\frac{1}{2} (\rho_{obs,k} - \ptjtk)^2  } {\rho^{N-1}_{obs,k}} d\rho_{obs,k}
    \end{align}
 Let $x = \rho_{obs,k} - \ptjtk$,
@@ -93,22 +94,24 @@ Let $x = \rho_{obs,k} - \ptjtk$,
 We can do the same for the denominator, and cancel out the constants. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
    
    \begin{equation}
-   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n }
+   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx}
    \end{equation}
 
-We argue that for very large $N$, the dominant term in the denominator is in the case $\vec{t}_k = \vec{t}_j$, such that $\tjtk = 1$. We also know the indefinite integral $\int e^{ax^r}x^{b-1} = -(1/r) x^b (-ax^r)^{-b/r} \Gamma(b/r,-ax^r)$ (link \href{http://functions.wolfram.com/ElementaryFunctions/Exp/21/01/02/01/01/08/0001/}{here}). Therefore, Equation \ref{eqn:prob_s_recovered_by_tk} becomes:
+We argue that for very large $N$, the dominant term in the denominator is in the case $\vec{t}_k = \vec{t}_j$, such that $\tjtk = 1$. We also know the indefinite integral $\int e^{ax^r}x^{b-1} = -(1/r) x^b (-ax^r)^{-b/r} \Gamma(b/r,-ax^r)$ (link \href{http://functions.wolfram.com/ElementaryFunctions/Exp/21/01/02/01/01/08/0001/}{here}). Therefore, this becomes:
 
    \begin{align}
-   &=  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } 
-   { e^{-\frac{1}{2}\rho^2} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n } \\
-   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n } 
-   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n } \\
+   &\approx  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
+   { e^{-\frac{1}{2}\rho^2} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
+   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
+   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
    &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) } 
-   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) }
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
+   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] }
    \end{align}
    
+If we expand $\binom{N-1}{n} = \frac{(N-1)!}{n!(N-n-1)!}$, $(N-1)!$ appears in both numerator and denominator and can be canceled out. 
+
 Looking at the denominator as an example, we can write
    
    \begin{align}
@@ -140,10 +143,10 @@ Can use this special value of $\Gamma(n,z) = (n-1)!e^{-z}\sum^{n-1}_{m=0} \frac{
    \begin{align}
    &= e^{\frac{1}{2}\rho^2\tjtk^2} \frac{(\frac{N}{2}-1)!e^{-(\ptjtk)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{(\ptjtk)^2}{2}\Big)^{n}\frac{1}{n!} } 
    {(\frac{N}{2}-1)!e^{-(\rho)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{\rho^2}{2}\Big)^{n}\frac{1}{n!} } \\
-   &= e^{\frac{1}{2}\rho^2\tjtk^2} e^{\frac{1}{2}\rho^2(1-\tjtk^2)}
+   &= \lim_{N\rightarrow\infty} e^{\frac{1}{2}\rho^2\tjtk^2} e^{\frac{1}{2}\rho^2(1-\tjtk^2)}
    \frac{\sum^{N/2-1}_{n=0} \Big(\frac{(\ptjtk)^2}{2}\Big)^{n}\frac{1}{n!} } 
    {\sum^{N/2-1}_{n=0} \Big(\frac{\rho^2}{2}\Big)^{n}\frac{1}{n!} } \\
-   &= \lim_{N\rightarrow\infty} e^{\frac{1}{2}\rho^2} \frac{e^{\frac{1}{2}(\ptjtk)^2}}{e^{\frac{1}{2}\rho^2}} \\
+   &= e^{\frac{1}{2}\rho^2} \frac{e^{\frac{1}{2}(\ptjtk)^2}}{e^{\frac{1}{2}\rho^2}} \\
    & = e^{\frac{1}{2}(\ptjtk)^2} 
    \end{align}
 
