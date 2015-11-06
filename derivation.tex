@@ -105,11 +105,11 @@ We argue that for very large $N$, the dominant term in the denominator is in the
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n } \\
    &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\ptjtk^2\Big) } 
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) } 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) }
    \end{align}
    
-Looking at the denominator,
+Looking at the denominator as an example, we can write
    
    \begin{align}
    \frac{d}{dN} &= \lim_{N_1\rightarrow N_2} \frac{ \sum_{n=0}^{N_2-1} \frac{1}{n!(N_2-n-1)!} \rho^{-n} 2^{n/2} \Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) 
@@ -121,7 +121,7 @@ Looking at the denominator,
    &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(\frac{1}{(N_2-n-1)!} - \frac{N_2-n-1}{(N_2-n-1)!} \Big) \\
    \notag & \qquad\qquad
    + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
-   &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(\frac{-(N_2-n-2)}{(N_2-n-1)!} \Big) \\
+   &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(-\frac{(N_2-n-2)}{(N_2-n-1)!} \Big) \\
    \notag & \qquad\qquad
    + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
    \end{align}
@@ -146,12 +146,6 @@ Can use this special value of $\Gamma(n,z) = (n-1)!e^{-z}\sum^{n-1}_{m=0} \frac{
    &= \lim_{N\rightarrow\infty} e^{\frac{1}{2}\rho^2} \frac{e^{\frac{1}{2}(\ptjtk)^2}}{e^{\frac{1}{2}\rho^2}} \\
    & = e^{\frac{1}{2}(\ptjtk)^2} 
    \end{align}
-   
-Therefore,
-
-   \begin{equation}
-   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = e^{\frac{1}{2}(\ptjtk)^2}
-   \end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
