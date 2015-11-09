@@ -57,8 +57,8 @@ Here, we assume that that signal $\vec{s}$ is described by one of the templates 
 Isolating for $\vec{n}$, we can solve for the squared magnitude $|\vec{n}|^2$:
 
    \begin{align}
-   \vec{n} &= \rho\vec{t}_j - \rho_{obs,k}\vec{t}_k \\
-   |\vec{n}|^2 &= (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k) \cdot (\rho\vec{t}_j - \rho_{obs,k}\vec{t}_k)\\
+   \vec{n} &= \rho_{obs,k}\vec{t}_k - \rho\vec{t}_j \\
+   |\vec{n}|^2 &= (\rho_{obs,k}\vec{t}_k - \rho\vec{t}_j) \cdot (\rho_{obs,k}\vec{t}_k - \rho\vec{t}_j)\\
                &= \rho^2 + \rho_{obs,k}^2 - 2\rho_{obs,k}\ptjtk
    \label{eqn:n_squaredmagnitude}
    \end{align}
@@ -86,27 +86,27 @@ Let's deal with the numerator in Equation \ref{eqn:prob_s_recovered_by_tk} first
 Let $x = \rho_{obs,k} - \ptjtk$,
 
    \begin{align}
-   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_0^\infty  e^{-\frac{1}{2} x^2  } {(x+\ptjtk)^{N-1}} dx \\
+   &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {(x+\ptjtk)^{N-1}} dx \\
    &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^n(\ptjtk)^{N-1-n} } dx \\
    &= \frac{\Delta\Omega(\ptjtk)^{N-1}}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int_{-\ptjtk}^\infty e^{-\frac{1}{2} x^2  } x^n  dx
    \end{align}
 
-We can do the same for the denominator, and cancel out the constants. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
+We can do the same for the denominator, and cancel out the constants $\Delta\Omega$, $\rho^{N-1}$, and $(2\pi)^{-N/2}$. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
    
    \begin{equation}
-   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx}
+   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{-\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{-\ptjtk} e^{-\frac{1}{2}x^2}x^n dx}
    \end{equation}
 
 We argue that for very large $N$, the dominant term in the denominator is in the case $\vec{t}_k = \vec{t}_j$, such that $\tjtk = 1$. We also know the indefinite integral $\int e^{ax^r}x^{b-1} = -(1/r) x^b (-ax^r)^{-b/r} \Gamma(b/r,-ax^r)$ (link \href{http://functions.wolfram.com/ElementaryFunctions/Exp/21/01/02/01/01/08/0001/}{here}). Therefore, this becomes:
 
    \begin{align}
    &\approx  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
-   { e^{-\frac{1}{2}\rho^2} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
-   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
+   { e^{-\frac{1}{2}\rho^2(1-1)} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
+   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
+   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] }
    \end{align}
    
@@ -127,8 +127,12 @@ Looking at the denominator as an example, we can write
    &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) \Big] \Big(-\frac{(N_2-n-2)}{(N_2-n-1)!} \Big) \\
    \notag & \qquad\qquad
    + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} \Gamma \Big(\frac{N_2}{2},\frac{\rho^2}{2}\Big) \Big] \\
+   &= \sum^{N_2-2}_{n=0} \frac{\rho^{-n}}{n!} \Big[2^{n/2}\Big(\frac{n}{2}-\frac{1}{2}\Big)! e^{-\rho^2/2} \sum_{m=0}^{n/2-1/2} \frac{(\rho^2/2)^m}{m!} \Big] \Big(-\frac{(N_2-n-2)}{(N_2-n-1)!} \Big) \\
+   \notag & \qquad\qquad
+   + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} (N_2-1)! e^{-\rho^2/2} \sum_{m=0}^{N_2-1} \frac{(\rho^2/2)^m}{m!} \Big]
    \end{align}
-   
+
+\begin{comment}   
 We can show that the first term goes to zero {\bf NEED TO PROVE THIS}, which leaves us with the second term only. The same can be done for the numerator. Combining numerator and denominator together, we get:
 
    \begin{align}
@@ -137,9 +141,13 @@ We can show that the first term goes to zero {\bf NEED TO PROVE THIS}, which lea
    &= e^{\frac{1}{2}\rho^2\tjtk^2} \frac{ \Gamma \Big(\frac{N}{2},\frac{(\ptjtk)^2}{2}\Big) } 
    { \Gamma \Big(\frac{N}{2},\frac{\rho^2}{2}\Big) } 
    \end{align}
+\end{comment}   
+   
    
 Can use this special value of $\Gamma(n,z) = (n-1)!e^{-z}\sum^{n-1}_{m=0} \frac{z^m}{m!}$ (link \href{http://functions.wolfram.com/GammaBetaErf/Gamma2/03/01/02/0007/}{here} and \href{https://en.wikipedia.org/wiki/Incomplete_gamma_function#Special_values}{here}).
 
+
+\begin{comment}
    \begin{align}
    &= e^{\frac{1}{2}\rho^2\tjtk^2} \frac{(\frac{N}{2}-1)!e^{-(\ptjtk)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{(\ptjtk)^2}{2}\Big)^{n}\frac{1}{n!} } 
    {(\frac{N}{2}-1)!e^{-(\rho)^2/2}\sum^{N/2-1}_{n=0} \Big(\frac{\rho^2}{2}\Big)^{n}\frac{1}{n!} } \\
@@ -149,6 +157,7 @@ Can use this special value of $\Gamma(n,z) = (n-1)!e^{-z}\sum^{n-1}_{m=0} \frac{
    &= e^{\frac{1}{2}\rho^2} \frac{e^{\frac{1}{2}(\ptjtk)^2}}{e^{\frac{1}{2}\rho^2}} \\
    & = e^{\frac{1}{2}(\ptjtk)^2} 
    \end{align}
+\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
