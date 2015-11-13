@@ -5,21 +5,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-def incomplete_Gamma(a,x):
+def log_incomplete_Gamma(a,x):
     # scipy.special.gammaincc is defined as
     # 1 / gamma(a) * integral(exp(-t) * t**(a-1), t=x..inf)
     # does gamma(a) * scipy.special.gammaincc to get the regular definition.
-    gamma = special.gamma(a)
-    incomplete_G = special.gammaincc(a,x) * gamma
-    return incomplete_G
+
+    # Gamma(a,x) = Gamma(a)-gamma(a,x)
+    # ln(Gamma(a,x)) = ln(Gamma(a)-gamma(a,x))
+    # ln(Gamma(a,x)) = ln(Gamma(a)*(1-gamma(a,x)/Gamma(a)))
+    # ln(Gamma(a,x)) = ln(Gamma(a)+ln(1-gamma(a,x)/Gamma(a)) where gamma(a,x)/Gamma(a) = regularized Gamma function P(a,x)
+    # ln(Gamma(a,x)) \approx ln(Gamma(a)) when a >> 1
+    #
+    #   Example: >>> special.gammainc(100,50)
+    #            3.2000653245851495e-10
+    #   Example: >>> special.gammainc(370,200)
+    #            4.2466647446310334e-27
+    
+    log_incomplete_G = special.gammaln(a)
+    return log_incomplete_G
 
 def list_sum(n, N, rho,tjtk):
     # finds summation of te first term in equation 23
     f = []
     for i in range(len(n)):
-        #f.append( (rho*tjtk)**(-n[i])/math.factorial(n[i]) * 2.**(n[i]/2) * incomplete_Gamma((n[i]+1)/2,(rho*tjtk)**2/2) * (-(N-n[i]-2)/(math.factorial(N-n[i]-1))))
-        f.append( (np.sqrt(2)/(rho*tjtk))**(n[i]) * incomplete_Gamma((n[i]+1)/2,(rho*tjtk)**2/2) * (1./special.gamma(N-n[i])) * (1./special.gamma(n[i]+1)) )
-        #f.append( (np.sqrt(2)/rho*tjtk)**(n[i]) * incomplete_Gamma((n[i]+1)/2,(rho*tjtk)**2/2) * (1./special.gamma(N-n[i])) * (1./special.gamma(n[i]+1)) )
+        f.append( np.exp( n[i]*np.log(np.sqrt(2)/(rho*tjtk))
+                          + special.gammaln((n[i]+1)/2)
+                          - special.gammaln(N-n[i])
+                          - special.gammaln(n[i]+1) ) )
     f = np.array(f)
     Sum = 0
     SummedArray = []
@@ -27,10 +39,6 @@ def list_sum(n, N, rho,tjtk):
         SummedArray.append(Sum)
         Sum += f[i]
     return Sum, SummedArray,f 
-
-#def summation(n, N, rho, tjtk):
-#    y = (np.sqrt(2)/(rho*tjtk))**(n[i]) * incomplete_Gamma((n[i]+1)/2,(rho*tjtk)**2/2) * (1./special.gamma(N-n[i])) * (1./special.gamma(n[i]+1))
-#    return y
 
 def derivative(x,y,i):
     diff1 = (y(x[i+1])-y(x[i]))/(x[i+1]-x[i])
@@ -55,15 +63,18 @@ def peak_finder(i, i_sample, n, x, y, option):
     diff = derivative(x,y,i)
     return i, diff, n
 
-N = 171. # number of dimensions
+N = 190. # number of dimensions
 rho = 10. # nominal SNR
 n = np.arange(0,N) # range of n in summation
 t = 0.9 # value of (t_j \cdot t_k)
 
-y = lambda x: (np.sqrt(2)/(rho*t))**(x) * incomplete_Gamma((x+1)/2,(rho*t)**2/2) * (1./special.gamma(N-x)) * (1./special.gamma(x+1))
+y = (lambda x: ( np.exp( x*np.log( np.sqrt(2)/(rho*t) )
+               + special.gammaln((x+1)/2)
+               - special.gammaln(N-x)
+               - special.gammaln(x+1) ) ) )
 
 i_sample = int(N/4)
-i = random.randint(0,len(n)-1)
+i = random.randint(0,N-1)
 diff = derivative(n,y,i)
 print "random i", i, diff
 if diff < 0:
@@ -105,23 +116,24 @@ peak_diff = diff
 
 print "Peak:", peak_index, peak_diff
 print "finding lower bound"
+p = 0.8
 
 diff2 = derivative(n,y,peak_index-i_sample)
 i = peak_index - i_sample
-if diff2 < abs(peak_diff*0.8):
-    while diff2 < abs(peak_diff*0.8):
+if diff2 < abs(peak_diff*p):
+    while diff2 < abs(peak_diff*p):
         i, diff2, s = peak_finder(i,i_sample,2,n,y,"+")
         print i, diff2
-    if diff2 > abs(peak_diff*0.8):
-        while diff2 > abs(peak_diff*0.8):
+    if diff2 > abs(peak_diff*p):
+        while diff2 > abs(peak_diff*p):
             i, diff2, s = peak_finder(i,i_sample,4,n,y,"-")
             print i, diff2
-elif diff2 > abs(peak_diff*0.8):
-    while diff2 > abs(peak_diff*0.8):
+elif diff2 > abs(peak_diff*p):
+    while diff2 > abs(peak_diff*p):
         i, diff2, s = peak_finder(i,i_sample,2,n,y,"-")
         print i, diff2
-    if diff2 < abs(peak_diff*0.8):
-        while diff2 < abs(peak_diff*0.8):
+    if diff2 < abs(peak_diff*p):
+        while diff2 < abs(peak_diff*p):
             i, diff2, s = peak_finder(i,i_sample,4,n,y,"+")
             print i, diff2
 
@@ -145,7 +157,7 @@ plt.plot(n[peak_index],y(n[peak_index]),marker="o")
 plt.figure()
 plt.plot(n,b)
 plt.plot(n[lowerbound_index:lowerbound_index+peak_index],b0,"--",color="red")
-plt.show()
+#plt.show()
 
 '''
 # finds second term in equation 23
