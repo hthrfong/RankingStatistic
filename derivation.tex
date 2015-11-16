@@ -101,19 +101,60 @@ We argue that for very large $N$, the dominant term in the denominator is in the
 
    \begin{align}
    &\approx  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
-   { e^{-\frac{1}{2}\rho^2(1-1)} \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
-   &= \frac{ \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
-   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
+   { (1)^{N-1}e^{-\frac{1}{2}\rho^2(1-1^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\rho(1))^{-n} \int^{\infty}_{\rho(1)} e^{-\frac{1}{2}x^2}x^n dx} \\
+   &= \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
+   { e^0\sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
+   &= \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
-   &= \tjtk^{N-1}e^{\frac{1}{2}\rho^2(1-\tjtk^2} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
+   &= \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
    { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] }
    \end{align}
    
-If we expand $\binom{N-1}{n} = \frac{(N-1)!}{n!(N-n-1)!}$, $(N-1)!$ appears in both numerator and denominator and can be canceled out. 
+We can expand $\binom{N-1}{n}$ in terms of Gamma functions: $\binom{N-1}{n} = \frac{(N-1)!}{n!(N-n-1)!} = \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)}$ to get:% $(N-1)!$ appears in both numerator and denominator and can be canceled out. We also canceled out $2^{-\frac{1}{2}}$.
 
-Looking at the denominator as an example, we can write
+   \begin{align}
+   &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
+   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] } \\
+   &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) } 
+   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) } \\
+   \end{align}
+  
+In the limit of $n \rightarrow \infty$, $\Gamma(a,x) \rightarrow \Gamma(a)$. This approximation is good enough when $a > 50$. Therefore:
    
+   \begin{align}
+   &\approx \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } 
+   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } \\
+   &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } 
+   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) }
+   \end{align}
+   
+Rather than compute the entire summation term in both the numerator and denominator, we want to find the values of $n$ which contribute the most to the summation term. We cannot compute this directly because Python gives overflow errors. First, we can locate the peak of the individual summation term by locating the peak of the logarithm of the individual summation term.
+
+   \begin{align}
+   &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} 
+   \frac{ \sum_{n=0}^{N-1} X_n } 
+   { \sum_{n=0}^{N-1} Y_n } \\
+   &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} 
+   \frac{ \sum_{n=0}^{N-1} [\exp(\ln(X_0)),\exp(\ln(X_1)),...,\exp(\ln(X_{N-1}))] } 
+   { \sum_{n=0}^{N-1} [\exp(\ln(Y_0)),\exp(\ln(Y_1)),...,\exp(\ln(Y_{N-1}))] }
+   \end{align}
+
+Let $\max[...] = \ln(X_\alpha), \ln(Y_\beta)$.
+
+   \begin{align}
+   &\rightarrow \frac{[\ln(X_0),\ln(X_1),...,\ln(X_{N-1})]}{[\ln(Y_0),\ln(Y_1),...,\ln(Y_{N-1})]} \\
+   &= \frac{[\ln(X_0)-\ln(X_\alpha),\ln(X_1)-\ln(X_\alpha),...,\ln(X_{N-1})-\ln(X_\alpha)]}{[\ln(Y_0)-\ln(Y_\beta),\ln(Y_1)-\ln(Y_\beta),...,\ln(Y_{N-1})-\ln(Y_\beta)]} \\
+   &= \frac{[\ln(X_0/X_\alpha),\ln(X_1/X_\alpha),...,\ln(X_{N-1}/X_\alpha))]}{[\ln(Y_0/Y_\beta),\ln(Y_1/Y_\beta),...,\ln(Y_{N-1}/Y_\beta)]} \\
+   &\rightarrow \frac{[\exp(\ln(X_0/X_\alpha)),\exp(\ln(X_1/X_\alpha)),...,\exp(\ln(X_{N-1}/X_\alpha))]}{[\exp(\ln(Y_0/Y_\beta)),\exp(\ln(Y_1/Y_\beta)),...,\exp(\ln(Y_{N-1}/Y_\beta))]} \\
+   &= \frac{[X_0/X_\alpha,X_1/X_\alpha,...,X_{N-1}/X_\alpha]}{[Y_0/Y_\beta,Y_1/Y_\beta,...,Y_{N-1}/Y_\beta]} \\
+   &=\frac{\frac{1}{X_\alpha}[X_0,X_1,...,X_{N-1}]}{\frac{1}{Y_\beta}[Y_0,Y_1,...,Y_{N-1}]} \times \frac{X_\alpha}{Y_\beta}
+   \end{align}
+
+In the final equality, we multiply the term by $X_\alpha/Y_\beta$ to get back the correct value.
+
+\begin{comment}
+Looking at the denominator as an example, we can write
+ 
    \begin{align}
    \frac{d}{dN} &= \lim_{N_1\rightarrow N_2} \frac{ \sum_{n=0}^{N_2-1} \frac{1}{n!(N_2-n-1)!} \rho^{-n} 2^{n/2} \Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) 
    - \sum_{n=0}^{N_1-1} \frac{1}{n!(N_1-n-1)!} \rho^{-n} 2^{n/2} \Gamma \Big(\frac{n+1}{2},\frac{\rho^2}{2}\Big) }
@@ -131,7 +172,7 @@ Looking at the denominator as an example, we can write
    \notag & \qquad\qquad
    + \frac{1}{(N_2-1)!} \rho^{-(N_2-1)} \Big[ 2^{(N_2-1)/2} (N_2-1)! e^{-\rho^2/2} \sum_{m=0}^{N_2-1} \frac{(\rho^2/2)^m}{m!} \Big]
    \end{align}
-
+\end{comment}
 \begin{comment}   
 We can show that the first term goes to zero {\bf NEED TO PROVE THIS}, which leaves us with the second term only. The same can be done for the numerator. Combining numerator and denominator together, we get:
 
