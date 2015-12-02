@@ -20,8 +20,9 @@ citecolor=blue}
 \usepackage{bm}% bold math      
 
 \newcommand{\ptjtk}{\rho(\vec{t}_j\cdot\vec{t}_k)}     
-\newcommand{\tjtk}{(\vec{t}_j\cdot\vec{t}_k)}                                                                                                      
-                                                                                                 
+\newcommand{\tjtk}{(\vec{t}_j\cdot\vec{t}_k)}    
+\newcommand{\tjtkk}{(\vec{t}_j\cdot\vec{t}_{k'})}    
+\newcommand{\ptjtkk}{\rho(\vec{t}_j\cdot\vec{t}_{k'})}                                                                                                                                                                                                                                                  
 
 \title{Title}
 \author{Author}
@@ -31,9 +32,9 @@ citecolor=blue}
 \begin{document}
 
 \maketitle
-\tableofcontents
+%\tableofcontents
 
-\section{}
+\section{Derivation}
 
 Given a signal $\vec{s}$ with parameters $\vec\theta$:
    \begin{equation}
@@ -43,9 +44,9 @@ where $m_1$ and $m_2$ are the masses, $\chi$ is the effective spin, and $\rho$ i
 
 Probability that the signal $\vec{s}$ is recovered in a chirp mass bin $i$:
    \begin{equation}
-   P(\text{bin $i$} | \vec{s}(\vec\theta)) = \sum_{\text{$k$ templates in bin $i$}} P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta))
+   P(\text{bin $i$} | \vec{s}(\vec\theta)) = \sum_{\text{$k$ templates in bin $i$}} P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta))
    \end{equation}
-where $P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta))$ is the probability that the signal is recovered by some template $\vec{t}_k$. $\vec{t}_k$ is the $k$th template that lies on the unit sphere, and $|\vec{t}_k| = 1$.
+where $P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta))$ is the probability that template $\vec{t}_k$ is the best match for the signal and noise. $\vec{t}_k$ is the $k$th template that lies on the unit sphere, and $|\vec{t}_k| = 1$.
 
    \begin{align}
    \vec{d} &= \vec{n} + \vec{s} \\
@@ -66,14 +67,14 @@ Isolating for $\vec{n}$, we can solve for the squared magnitude $|\vec{n}|^2$:
 $\vec{n}$ is Gaussian distributed with constant variance of 1, so the probability density function for $N$ dimensions is given as
 
    \begin{equation}
-   f(|\vec{n}|) = \frac{1}{(2\pi)^{N/2}}e^{-\frac{1}{2}|\vec{n}|^2}
+   f(\vec{n}) = \frac{1}{(2\pi)^{N/2}}e^{-\frac{1}{2}|\vec{n}|^2}
    \end{equation}
 
-We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$. If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
+We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$ (assuming $\Delta\Omega$ not constant, go here: \ref{section:angle}). If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
 
    \begin{equation}
-   P(\text{$\vec{s}$ recovered by $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
-   {\sum_{\vec{t}_k} \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
+   P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
+   {\sum_{\vec{t}_{k'}} \int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k'}} d\rho_{obs,k'} \Delta\Omega}
    \label{eqn:prob_s_recovered_by_tk}
    \end{equation}
 
@@ -94,52 +95,54 @@ Let $x = \rho_{obs,k} - \ptjtk$,
 We can do the same for the denominator, and cancel out the constants $\Delta\Omega$, $\rho^{N-1}$, and $(2\pi)^{-N/2}$. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
    
    \begin{equation}
-   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{-\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} { \sum_{\vec{t}_k} \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{-\ptjtk} e^{-\frac{1}{2}x^2}x^n dx}
+   =  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{-\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} { \sum_{\vec{t}_{k'}} \tjtkk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtkk^2)} \sum_{n'=0}^{N-1} \binom{N-1}{n'} (\ptjtkk)^{-n'} \int^{\infty}_{-\ptjtkk} e^{-\frac{1}{2}x^2}x^{n'} dx}
    \end{equation}
 
 We argue that for very large $N$, the dominant term in the denominator is in the case $\vec{t}_k = \vec{t}_j$, such that $\tjtk = 1$. We also know the indefinite integral $\int e^{ax^r}x^{b-1} = -(1/r) x^b (-ax^r)^{-b/r} \Gamma(b/r,-ax^r)$ (link \href{http://functions.wolfram.com/ElementaryFunctions/Exp/21/01/02/01/01/08/0001/}{here}). Therefore, this becomes:
 
    \begin{align}
    &\approx  \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
-   { (1)^{N-1}e^{-\frac{1}{2}\rho^2(1-1^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\rho(1))^{-n} \int^{\infty}_{\rho(1)} e^{-\frac{1}{2}x^2}x^n dx} \\
+   { (1)^{N-1}e^{-\frac{1}{2}\rho^2(1-1^2)} \sum_{n'=0}^{N-1} \binom{N-1}{n'} (\rho(1))^{-n'} \int^{\infty}_{\rho(1)} e^{-\frac{1}{2}x^2}x^{n'} dx} \\
    &= \frac{ \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int^{\infty}_{\ptjtk} e^{-\frac{1}{2}x^2}x^n dx} 
-   { e^0\sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^n dx} \\
+   { e^0\sum_{n'=0}^{N-1} \binom{N-1}{n'} \rho^{-n'} \int^{\infty}_{\rho} e^{-\frac{1}{2}x^2}x^{n'} dx} \\
    &= \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\ptjtk} } 
-   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ -(2)^{\frac{1}{2}(n-1)}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
+   { \sum_{n'=0}^{N-1} \binom{N-1}{n'} \rho^{-n'}  \Big[ -(2)^{\frac{1}{2}(n'-1)}\Gamma\Big(\frac{n'+1}{2},\frac{1}{2}x^2\Big) \Big]^{\infty}_{\rho} } \\
    &= \tjtk^{N-1}e^{-\frac{1}{2}\rho^2(1-\tjtk^2)} \frac{ \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
-   { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] }
+   { \sum_{n'=0}^{N-1} \binom{N-1}{n'} \rho^{-n'}  \Big[ 2^{\frac{n'}{2}}\Gamma\Big(\frac{n'+1}{2},\frac{1}{2}\rho^2\Big) \Big] }
    \end{align}
    
 We can expand $\binom{N-1}{n}$ in terms of Gamma functions: $\binom{N-1}{n} = \frac{(N-1)!}{n!(N-n-1)!} = \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)}$ to get:% $(N-1)!$ appears in both numerator and denominator and can be canceled out. We also canceled out $2^{-\frac{1}{2}}$.
 
    \begin{align}
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} (\ptjtk)^{-n} \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) \Big]} 
-   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \rho^{-n}  \Big[ 2^{\frac{n}{2}}\Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) \Big] } \\
+   { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \rho^{-n'}  \Big[ 2^{\frac{n'}{2}}\Gamma\Big(\frac{n'+1}{2},\frac{1}{2}\rho^2\Big) \Big] } \\
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2},\frac{1}{2}(\ptjtk)^2\Big) } 
-   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2},\frac{1}{2}\rho^2\Big) } \\
+   { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n'} \Gamma\Big(\frac{n'+1}{2},\frac{1}{2}\rho^2\Big) } \\
    \end{align}
   
 In the limit of $n \rightarrow \infty$, $\Gamma(a,x) \rightarrow \Gamma(a)$. This approximation is good enough when $a > 50$. Therefore:
    
    \begin{align}
    &\approx \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } 
-   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } \\
+   { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n'} \Gamma\Big(\frac{n'+1}{2}\Big) } \\
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } 
-   { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) }
+   { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n'} \Gamma\Big(\frac{n'+1}{2}\Big) }
    \end{align}
+   
+\section{Computing $P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta))$ in Python}
    
 Rather than compute the entire summation term in both the numerator and denominator, we want to find the values of $n$ which contribute the most to the summation term. We cannot compute this directly because Python gives overflow errors. First, we can locate the peak of the individual summation term by locating the peak of the logarithm of the individual summation term.
 
    \begin{align}
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} 
    \frac{ \sum_{n=0}^{N-1} X_n } 
-   { \sum_{n=0}^{N-1} Y_n } \\
+   { \sum_{n'=0}^{N-1} Y_{n'} } \\
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} 
    \frac{ \sum_{n=0}^{N-1} [\exp(\ln(X_0)),\exp(\ln(X_1)),...,\exp(\ln(X_{N-1}))] } 
-   { \sum_{n=0}^{N-1} [\exp(\ln(Y_0)),\exp(\ln(Y_1)),...,\exp(\ln(Y_{N-1}))] }
+   { \sum_{n'=0}^{N-1} [\exp(\ln(Y_0)),\exp(\ln(Y_1)),...,\exp(\ln(Y_{N-1}))] }
    \end{align}
 
-Let $\max[...] = \ln(X_\alpha), \ln(Y_\beta)$.
+Let $\max[\ln(...)] = \ln(X_\alpha), \ln(Y_\beta)$. Subtract $\ln$(max) from each $\ln(...)$ term to normalize the function. Then, take the exponential of each $\ln(...)$ to get back the original, albeit normalized terms.
 
    \begin{align}
    &\rightarrow \frac{[\ln(X_0),\ln(X_1),...,\ln(X_{N-1})]}{[\ln(Y_0),\ln(Y_1),...,\ln(Y_{N-1})]} \\
@@ -147,10 +150,10 @@ Let $\max[...] = \ln(X_\alpha), \ln(Y_\beta)$.
    &= \frac{[\ln(X_0/X_\alpha),\ln(X_1/X_\alpha),...,\ln(X_{N-1}/X_\alpha))]}{[\ln(Y_0/Y_\beta),\ln(Y_1/Y_\beta),...,\ln(Y_{N-1}/Y_\beta)]} \\
    &\rightarrow \frac{[\exp(\ln(X_0/X_\alpha)),\exp(\ln(X_1/X_\alpha)),...,\exp(\ln(X_{N-1}/X_\alpha))]}{[\exp(\ln(Y_0/Y_\beta)),\exp(\ln(Y_1/Y_\beta)),...,\exp(\ln(Y_{N-1}/Y_\beta))]} \\
    &= \frac{[X_0/X_\alpha,X_1/X_\alpha,...,X_{N-1}/X_\alpha]}{[Y_0/Y_\beta,Y_1/Y_\beta,...,Y_{N-1}/Y_\beta]} \\
-   &=\frac{\frac{1}{X_\alpha}[X_0,X_1,...,X_{N-1}]}{\frac{1}{Y_\beta}[Y_0,Y_1,...,Y_{N-1}]} \times \frac{X_\alpha}{Y_\beta}
+   &\rightarrow\frac{\frac{1}{X_\alpha}[X_0,X_1,...,X_{N-1}]}{\frac{1}{Y_\beta}[Y_0,Y_1,...,Y_{N-1}]} \times \frac{X_\alpha}{Y_\beta}
    \end{align}
 
-In the final equality, we multiply the term by $X_\alpha/Y_\beta$ to get back the correct value.
+In the final equality, we multiply the term by $X_\alpha/Y_\beta$ to get back the correct value. Python is able to calculate this term to $N < 1\times10^{7}$ without overflow errors, which is more than we need ($\sim$ 10 seconds). For $N = 1\times10^{6}$, Python is able to compute the entire summation in $\sim$ 2 seconds.
 
 \begin{comment}
 Looking at the denominator as an example, we can write
@@ -256,6 +259,50 @@ Then:
    \max\Big( \binom{N-1}{n} (\tjtk)^{-n}\Big) \approx \frac{(\tjtk+1)^N}{\sqrt{2\pi(\tjtk)^{3}N}}
    \end{equation}
 \end{comment}
+
+\section{Calculating with angle}\label{section:angle}
+
+Here, we work out the probability where $|\vec n|$ depends on $\theta$, which is the angle of the cone of $\vec t_k$. We calculate this for $N=2$. Using cosine law,
+
+	\begin{equation}
+	|\vec n|^2 = \rho^2 + \rho^2_{obs,k} - 2\rho\rho_{obs,k}\cos\theta.
+	\end{equation}
+	
+	\begin{align}
+	\rightarrow& \int_{\theta_1}^{\theta_2} \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k} - 2\rho\rho_{obs,k}\cos\theta)} \rho_{obs,k} d\rho_{obs,k} d\theta \\
+	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2}e^{\rho\rho_{obs,k}\cos\theta}d\theta \Big]d\rho_{obs,k}
+	\end{align}
+
+To integrate $\int f(\theta) d\theta$, we can expand the exponential term into an infinite sum (because there is no straightforward analytic solution). Also use the definite integral $\int_0^{\infty} e^{-Ax^2}x^ndx = \frac{1}{2}\Gamma(\frac{n+1}{2})A^{-(n+1)/2}$ (link \href{https://en.wikipedia.org/wiki/List_of_integrals_of_exponential_functions}{here}).
+
+	\begin{align}
+	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2} \sum_{a=0}^{\infty} \frac{(\rho\rho_{obs,k}\cos\theta)^a}{a!} d\theta \Big]d\rho_{obs,k} \\
+	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2} 
+		(1+\rho\rho_{obs,k}\cos\theta + \frac{1}{2}\rho^2\rho^2_{obs,k}\cos^2\theta + \frac{1}{6}\rho^3\rho^3_{obs,k}\cos^3\theta \\ \notag &+ \frac{1}{24}\rho^4\rho^4_{obs,k}\cos^4\theta + \frac{1}{120}\rho^5\rho^5_{obs,k}\cos^5\theta + \frac{1}{720}\rho^6\rho^6_{obs,k}\cos^6\theta + ...) d\theta \Big] d\rho_{obs,k} \\
+	\approx& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} 
+		\Big[
+		\Delta\theta + \rho\rho_{obs,k}\sin\theta|_{\theta_1}^{\theta_2} + \frac{1}{2}\rho^2\rho^2_{obs,k}\frac{1}{2}(\Delta\theta + \sin\theta\cos\theta|_{\theta_1}^{\theta_2}) \\ \notag &+ \frac{1}{6}\rho^3\rho^3_{obs,k}\frac{1}{12}(9\sin\theta+\sin3\theta)|_{\theta_1}^{\theta_2} + \frac{1}{24}\rho^4\rho^4_{obs,k}\frac{1}{32}(12\Delta\theta+8\sin2\theta+\sin4\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \frac{1}{120}\rho^5\rho^5_{obs,k}(\frac{5}{8}\sin\theta + \frac{5}{48}\sin3\theta + \frac{1}{80}\sin5\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \frac{1}{720}\rho^6\rho^6_{obs,k}\frac{1}{192}(60\Delta\theta + 45\sin2\theta + 9\sin4\theta + \sin6\theta)|_{\theta_1}^{\theta_2}
+		\Big] d\rho_{obs,k} \\
+	=& \frac{1}{2\pi}e^{-\frac{1}{2}\rho^2}
+		\Big[
+		\Gamma(1)\Delta\theta + \rho(1/2)^{-1/2}\Gamma(3/2)\sin\theta|_{\theta_1}^{\theta_2} + \rho^2(1/2)\Gamma(2)(\Delta\theta + \sin\theta\cos\theta|_{\theta_1}^{\theta_2}) \\ \notag &+ \frac{1}{6}\rho^3(1/2)^{-3/2}\frac{1}{12}\Gamma(5/2)(9\sin\theta+\sin3\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^4\frac{1}{24}\frac{1}{32}(1/2)^{-2}\Gamma(3)(12\Delta\theta+8\sin2\theta+\sin4\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^5\frac{1}{120}(1/2)^{-5/2}\Gamma(7/2)(\frac{5}{8}\sin\theta + \frac{5}{48}\sin3\theta + \frac{1}{80}\sin5\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^6\frac{1}{720}\frac{1}{192}(1/2)^{-3}\Gamma(4)(60\Delta\theta + 45\sin2\theta + 9\sin4\theta + \sin6\theta)|_{\theta_1}^{\theta_2}
+		\Big] \\
+	\end{align}
+	
+	\begin{align}
+	=& \frac{1}{2\pi}e^{-\frac{1}{2}\rho^2}
+		\Big[
+		\Delta\theta + \rho(1/2)^{-1/2}\frac{\sqrt{\pi}}{2}\sin\theta|_{\theta_1}^{\theta_2} + \rho^2(1/2)(\Delta\theta + \sin\theta\cos\theta|_{\theta_1}^{\theta_2}) \\ \notag &+ \frac{1}{6}\rho^3(1/2)^{-3/2}\frac{1}{12}\frac{3\sqrt{\pi}}{4}(9\sin\theta+\sin3\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^4\frac{1}{24}\frac{1}{32}(1/2)^{-3}(12\Delta\theta+8\sin2\theta+\sin4\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^5\frac{1}{120}(1/2)^{-5/2}\frac{15\sqrt{\pi}}{8}(\frac{5}{8}\sin\theta + \frac{5}{48}\sin3\theta + \frac{1}{80}\sin5\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^6\frac{1}{120}\frac{1}{192}(1/2)^{-3}(60\Delta\theta + 45\sin2\theta + 9\sin4\theta + \sin6\theta)|_{\theta_1}^{\theta_2}
+		\Big] \\
+	=& \frac{1}{2\pi}e^{-\frac{1}{2}\rho^2}
+		\Big[
+		\Delta\theta + \rho\sqrt{\frac{\pi}{2}}\sin\theta|_{\theta_1}^{\theta_2} + \rho^2\frac{1}{2}(\Delta\theta + \frac{1}{2}\sin2\theta|_{\theta_1}^{\theta_2}) \\ \notag &+ \rho^3\frac{\sqrt{2\pi}}{48}(9\sin\theta+\sin3\theta)|_{\theta_1}^{\theta_2} + \rho^4\frac{1}{96}(12\Delta\theta+8\sin2\theta+\sin4\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^5\frac{\sqrt{2\pi}}{128}(5\sin\theta + \frac{5}{6}\sin3\theta + \frac{1}{10}\sin5\theta)|_{\theta_1}^{\theta_2} \\ \notag &+ \rho^6\frac{1}{2880}(60\Delta\theta + 45\sin2\theta + 9\sin4\theta + \sin6\theta)|_{\theta_1}^{\theta_2}
+		\Big] \\
+	=& \frac{1}{2\pi}e^{-\frac{1}{2}\rho^2}
+		\Big[
+		\Delta\theta\Big(1+ \rho^2\frac{1}{2} + \rho^4\frac{1}{8} + \rho^6\frac{1}{48}\Big) + \sin\theta|_{\theta_1}^{\theta_2}(\rho\sqrt{\frac{\pi}{2}} + \rho^3\frac{3\sqrt{2\pi}}{16} + \rho^5\frac{5\sqrt{2\pi}}{128}) \\ \notag &+ \sin2\theta|_{\theta_1}^{\theta_2}(\rho^2\frac{1}{4} + \rho^4\frac{1}{12} + \rho^6\frac{1}{64}) + \sin3\theta|_{\theta_1}^{\theta_2}(\rho^3\frac{\sqrt{2\pi}}{48} + \rho^5\frac{5\sqrt{2\pi}}{768}) \\ \notag &+ \sin4\theta|_{\theta_1}^{\theta_2}(\rho^4\frac{1}{96} + \rho^6\frac{1}{320}) + \sin5\theta|_{\theta_1}^{\theta_2}(\rho^5\frac{\sqrt{2\pi}}{1280}) + \sin6\theta|_{\theta_1}^{\theta_2}(\rho^6\frac{1}{2880})
+		\Big]
+	\end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%

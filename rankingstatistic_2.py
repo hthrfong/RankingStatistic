@@ -13,7 +13,7 @@ start_time = time.time()
 rho = 50.
 t = [0.9, 1.0] # (tj \cdot tk) for [numerator, denominator]
 #N_array = np.arange(10000,5010000,50000)
-N_array = np.arange(1000,1010000,50000)
+N_array = np.arange(90000000,110000000,10000000)
 total = []
 
 for N in N_array:

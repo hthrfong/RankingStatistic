@@ -24,15 +24,15 @@ def log_incomplete_Gamma(a,x):
     log_incomplete_G = special.gammaln(a)
     return log_incomplete_G
 
-def list_sum(n, N, rho,tjtk):
+def list_sum(n,N,rho,tjtk, y):
     # finds summation of te first term in equation 23
     f = []
     for i in range(len(n)):
-        f.append( np.exp( n[i]*np.log(np.sqrt(2)/(rho*tjtk))
-                          + special.gammaln((n[i]+1)/2)
-                          - special.gammaln(N-n[i])
-                          - special.gammaln(n[i]+1) ) )
+        f.append( y(n[i]) )
+        #if f[-1] < 1e-16*max(f):
+        #    break
     f = np.array(f)
+    #cumsum
     Sum = 0
     SummedArray = []
     for i in range(len(f)):
@@ -45,78 +45,205 @@ def derivative(x,y,i):
     return diff1
 
 def peak_finder(i, i_sample, n, x, y, option):
-    if int(i_sample/n**2) < 1:
+    if int(i_sample/n**2) <= 1:
         if option == "-":
             i -= 1
-        elif option == "+":
+        if option == "+":
             i += 1
-    if option == "-":
+    if int(i_sample/n**2) > 1 and option == "-":
         if (i - int(i_sample/n**2)) < 0:
             i -= 1
-        else:
+        if (i - int(i_sample/n**2)) > 0:
             i -= int(i_sample/n**2)
-    if option == "+":
+    if int(i_sample/n**2) > 1 and option == "+":
         if (i + int(i_sample/n**2)) > len(x)-1:
             i += 1
-        else:
+        if (i + int(i_sample/n**2)) < len(x)-1:
             i += int(i_sample/n**2)
     diff = derivative(x,y,i)
+    print "\t \t diff and i", diff, i
     return i, diff, n
 
-N = 190. # number of dimensions
+def sampling(i,i_sample,s,x,y,diff,number):
+    if diff > number:
+        while diff > number and i > 0:
+            i,diff,s = peak_finder(i,i_sample,s,x,y,"+")
+    if diff < number:
+        while diff < number and i > 0:
+            i,diff,s = peak_finder(i,i_sample,s,x,y,"-")
+    s += 1
+    return i, diff, s
+
+def iterative_finding(N,x,y,i,i_sample,peak_diff,s):
+    diff = derivative(x,y,i)
+    print "\t i", i, diff, peak_diff
+    i, diff, s = sampling(i,i_sample,s,x,y,diff,peak_diff)
+    return i, diff, s
+
+N = 100. # number of dimensions
 rho = 10. # nominal SNR
 n = np.arange(0,N) # range of n in summation
 t = 0.9 # value of (t_j \cdot t_k)
 
-y = (lambda x: ( np.exp( x*np.log( np.sqrt(2)/(rho*t) )
-               + special.gammaln((x+1)/2)
-               - special.gammaln(N-x)
-               - special.gammaln(x+1) ) ) )
+y_num = (lambda x: ( x*np.log( np.sqrt(2)/(rho*t) )
+                         + special.gammaln(N)
+                         + special.gammaln((x+1)/2)
+                         - special.gammaln(N-x)
+                         - special.gammaln(x+1) ) )
+
+#y_den = (lambda x: ( x*np.log( np.sqrt(2)/(rho) )
+#                         + special.gammaln(N)
+#                         + special.gammaln((x+1)/2)
+#                         - special.gammaln(N-x)
+#                         - special.gammaln(x+1) ) )
+
+#y = (lambda x: ( x*np.log( np.sqrt(2)/(rho*t) )
+#               + special.gammaln((x+1)/2)
+#               - special.gammaln(N-x)
+#               - special.gammaln(x+1) ) )
 
 i_sample = int(N/4)
 i = random.randint(0,N-1)
-diff = derivative(n,y,i)
+'''s = 1
+while int(i_sample/s**2) >= 1 and i > 0:
+    i,diff, s = iterative_finding(N,n,y,i,i_sample,0,s)
+    if i < 0:
+        break
+peak_index = i
+peak_diff = diff
+print "Peak", peak_index,peak_diff,s
+s = 1
+while int(i_sample/s**2) >= 1 and i > 0:
+    i,diff, s = iterative_finding(N,n,y,peak_index-i_sample,i_sample,peak_diff*0.8,s)
+    if i < 0:
+        break
+lowerbound_index = i
+lowerbound_diff = diff
+print "Lower bound", lowerbound_index,lowerbound_diff,s'''
+diff = derivative(n,y_num,i)
 print "random i", i, diff
 if diff < 0:
     while diff < 0:
-        i, diff, s = peak_finder(i,i_sample,1,n,y,"-")
+        i, diff, s = peak_finder(i,i_sample,1,n,y_num,"-")
         print i, diff
     if diff > 0:
         while diff > 0:
-            i, diff, s = peak_finder(i,i_sample,2,n,y,"+")
+            i, diff, s = peak_finder(i,i_sample,2,n,y_num,"+")
             print i, diff
         if diff < 0:
             while diff < 0:
-                i, diff, s = peak_finder(i,i_sample,4,n,y,"-")
+                i, diff, s = peak_finder(i,i_sample,4,n,y_num,"-")
                 print i, diff
             if diff > 0:
                 while diff > 0:
-                    i, diff, s = peak_finder(i,i_sample,8,n,y,"+")
+                    i, diff, s = peak_finder(i,i_sample,8,n,y_num,"+")
                     print i, diff
 elif diff > 0:
     while diff > 0:
-        i, diff, s = peak_finder(i,i_sample,1,n,y,"+")
+        i, diff, s = peak_finder(i,i_sample,1,n,y_num,"+")
         print i, diff
     if diff < 0:
         while diff < 0:
-            i, diff, s = peak_finder(i,i_sample,2,n,y,"-")
+            i, diff, s = peak_finder(i,i_sample,2,n,y_num,"-")
             print i, diff
         if diff > 0:
             while diff > 0:
-                i, diff, s = peak_finder(i,i_sample,4,n,y,"+")
+                i, diff, s = peak_finder(i,i_sample,4,n,y_num,"+")
                 print i, diff
             if diff < 0:
                 while diff < 0:
-                    i, diff, s = peak_finder(i,i_sample,8,n,y,"-")
+                    i, diff, s = peak_finder(i,i_sample,8,n,y_num,"-")
                     print i, diff
 
             
-peak_index = i
-peak_diff = diff
+peak_index_num = i
+peak_diff_num = diff
+'''
+diff = derivative(n,y_den,i)
+print "random i", i, diff
+if diff < 0:
+    while diff < 0:
+        i, diff, s = peak_finder(i,i_sample,1,n,y_den,"-")
+        print i, diff
+    if diff > 0:
+        while diff > 0:
+            i, diff, s = peak_finder(i,i_sample,2,n,y_den,"+")
+            print i, diff
+        if diff < 0:
+            while diff < 0:
+                i, diff, s = peak_finder(i,i_sample,4,n,y_den,"-")
+                print i, diff
+            if diff > 0:
+                while diff > 0:
+                    i, diff, s = peak_finder(i,i_sample,8,n,y_den,"+")
+                    print i, diff
+elif diff > 0:
+    while diff > 0:
+        i, diff, s = peak_finder(i,i_sample,1,n,y_den,"+")
+        print i, diff
+    if diff < 0:
+        while diff < 0:
+            i, diff, s = peak_finder(i,i_sample,2,n,y_den,"-")
+            print i, diff
+        if diff > 0:
+            while diff > 0:
+                i, diff, s = peak_finder(i,i_sample,4,n,y_den,"+")
+                print i, diff
+            if diff < 0:
+                while diff < 0:
+                    i, diff, s = peak_finder(i,i_sample,8,n,y_den,"-")
+                    print i, diff
+'''
+#peak_index_den = i
+#peak_diff_den = diff
 
-print "Peak:", peak_index, peak_diff
+print "Peak:", peak_index_num, peak_diff_num#, peak_index_den, peak_diff_den
+
+y_num2 = (lambda x: ( np.exp( x*np.log( np.sqrt(2)/(rho*t) )
+                         + special.gammaln(N)
+                         + special.gammaln((x+1)/2)
+                         - special.gammaln(N-x)
+                         - special.gammaln(x+1) - y_num(n[peak_index_num]) ) ) )
+
+y_den2 = (lambda x: ( np.exp( x*np.log( np.sqrt(2)/(rho) )
+                        + special.gammaln(N)
+                         + special.gammaln((x+1)/2)
+                         - special.gammaln(N-x)
+                         - special.gammaln(x+1) - y_den(n[peak_index_den]) ) ) )
+
+diff = derivative(n,y_num2,i)
+i = peak_index_num - i_sample
+number = abs(derivative(n,y_num2,peak_index_num)*0.1)
+print "number:",number
+if diff < number:
+    while diff < number:
+        i, diff, s = peak_finder(i,i_sample,2,n,y_num2,"+")
+        print i, diff
+    if diff > number:
+        while diff > number:
+            i, diff, s = peak_finder(i,i_sample,4,n,y_num2,"-")
+            print i, diff
+elif diff > number:
+    while diff > number:
+        i, diff, s = peak_finder(i,i_sample,2,n,y_num2,"-")
+        print i, diff
+    if diff < number:
+        while diff < number:
+            i, diff, s = peak_finder(i,i_sample,4,n,y_num2,"+")
+            print i, diff
+
+lowerbound_index_num = i
+lowerbound_diff_num = diff
+
+theSum0, b0, f0 = list_sum(n[lowerbound_index_num:lowerbound_index_num+peak_index_num],N,rho,t,y_num2)
+theSum, b,f = list_sum(n,N,rho,t,y_num2)
+theSum2, b2,f2 = list_sum(n,N,rho,1.,y_num2)
+
+print np.exp(rho**2*(1-t**2))*(t**(N-1))*(theSum0/theSum2)*(y_num2(n[peak_index_num])/
+
+'''
 print "finding lower bound"
-p = 0.8
+p = 0.001
 
 diff2 = derivative(n,y,peak_index-i_sample)
 i = peak_index - i_sample
@@ -140,6 +267,7 @@ elif diff2 > abs(peak_diff*p):
 lowerbound_index = i
 lowerbound_diff = diff2
 
+print "Peak:", peak_index,peak_diff
 print "Lower bound:", lowerbound_index, lowerbound_diff
 
 
@@ -159,7 +287,6 @@ plt.plot(n,b)
 plt.plot(n[lowerbound_index:lowerbound_index+peak_index],b0,"--",color="red")
 #plt.show()
 
-'''
 # finds second term in equation 23
 #c = 1./(math.factorial(N-1)) * (rho*t)**(-N+1) * 2.**((N-1)/2) * incomplete_Gamma(N/2,(rho*t)**2/2)
 #c2 = 1./(math.factorial(N-1)) * (rho)**(-N+1) * 2.**((N-1)/2) * incomplete_Gamma(N/2,(rho)**2/2)
