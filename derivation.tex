@@ -70,7 +70,7 @@ $\vec{n}$ is Gaussian distributed with constant variance of 1, so the probabilit
    f(\vec{n}) = \frac{1}{(2\pi)^{N/2}}e^{-\frac{1}{2}|\vec{n}|^2}
    \end{equation}
 
-We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$ (assuming $\Delta\Omega$ not constant, go here: \ref{section:angle}). If it is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
+We want to find the probability that $\vec{d}=\rho\vec{t}_j+\vec{n}$ lies inside the conic volume of some template $\vec{t}_k$ with solid angle $\Delta\Omega$ (assuming $\Delta\Omega$ not constant and $N=2$, go here for calculations: \ref{section:angle}). If $\vec{d}$ is inside the conic volume, it means that it is recoverable by that template $\vec{t}_k$.
 
    \begin{equation}
    P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta)) = \frac{\int_0^\infty \frac{1}{(2\pi)^{N/2}} e^{-\frac{1}{2} |\vec{n}|^2} {\rho^{N-1}_{obs,k}} d\rho_{obs,k} \Delta\Omega}
@@ -91,7 +91,7 @@ Let $x = \rho_{obs,k} - \ptjtk$,
    &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^n(\ptjtk)^{N-1-n} } dx \\
    &= \frac{\Delta\Omega(\ptjtk)^{N-1}}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{-n} \int_{-\ptjtk}^\infty e^{-\frac{1}{2} x^2  } x^n  dx
    \end{align}
-
+(What if we switched exponents when taking the binomial distribution of $(x+\ptjtk)^{N-1}$? Go here for alternate calculations: \ref{section:alternate_binomial_expansion_calculations}.)
 We can do the same for the denominator, and cancel out the constants $\Delta\Omega$, $\rho^{N-1}$, and $(2\pi)^{-N/2}$. And so Equation \ref{eqn:prob_s_recovered_by_tk} becomes the following:
    
    \begin{equation}
@@ -303,6 +303,51 @@ To integrate $\int f(\theta) d\theta$, we can expand the exponential term into a
 		\Delta\theta\Big(1+ \rho^2\frac{1}{2} + \rho^4\frac{1}{8} + \rho^6\frac{1}{48}\Big) + \sin\theta|_{\theta_1}^{\theta_2}(\rho\sqrt{\frac{\pi}{2}} + \rho^3\frac{3\sqrt{2\pi}}{16} + \rho^5\frac{5\sqrt{2\pi}}{128}) \\ \notag &+ \sin2\theta|_{\theta_1}^{\theta_2}(\rho^2\frac{1}{4} + \rho^4\frac{1}{12} + \rho^6\frac{1}{64}) + \sin3\theta|_{\theta_1}^{\theta_2}(\rho^3\frac{\sqrt{2\pi}}{48} + \rho^5\frac{5\sqrt{2\pi}}{768}) \\ \notag &+ \sin4\theta|_{\theta_1}^{\theta_2}(\rho^4\frac{1}{96} + \rho^6\frac{1}{320}) + \sin5\theta|_{\theta_1}^{\theta_2}(\rho^5\frac{\sqrt{2\pi}}{1280}) + \sin6\theta|_{\theta_1}^{\theta_2}(\rho^6\frac{1}{2880})
 		\Big]
 	\end{align}
+
+In the end, we concluded that doing the $\Delta\Omega$ approximation is fine because we don't pick up additional terms of $\rho$ and the answer doesn't change when we increase $N$.
+
+Numerator only:
+
+        \begin{align}
+        \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}\delta\theta \approx \Delta\theta + O(\Delta\theta^2)+...
+        \end{align}
+
+\section{Alternate binomial expansion calculation}\label{section:alternate_binomial_expansion_calculations}
+
+        \begin{align}
+        &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {(x+\ptjtk)^{N-1}} dx \\
+        &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {\sum_{n=0}^{N-1} \binom{N-1}{n}x^{N-n-1}(\ptjtk)^{n} } dx \\
+        &= \frac{\Delta\Omega}{(2\pi)^{N/2}  e^{\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{n} \int_{-\ptjtk}^\infty e^{-\frac{1}{2} x^2  } x^{N-n-1}  dx \\
+        &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{n} 
+          \Big[
+            -\frac{1}{2}\Big(\frac{1}{2}\Big)^{-(N-n)/2}\Gamma\Big(\frac{N-n}{2},\frac{x^2}{2}\Big)
+          \Big]^{\infty}_{-\ptjtk} \\
+        &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{n} 
+          \Big[
+            \frac{1}{2}\Big(\frac{1}{2}\Big)^{-(N-n)/2}\Gamma\Big(\frac{N-n}{2},\frac{(\ptjtk)^2}{2}\Big)
+          \Big]
+        \end{align}
+
+Putting it together, numerator and denominator (where denominator only keeps $\tjtk=1$) and cancelling out constants:
+
+        \begin{align}
+        &= \frac{ e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}  \sum_{n=0}^{N-1} \binom{N-1}{n} (\ptjtk)^{n} 
+          \Big[
+            \frac{1}{2}\Big(\frac{1}{2}\Big)^{-(N-n)/2}\Gamma\Big(\frac{N-n}{2},\frac{(\ptjtk)^2}{2}\Big)
+          \Big] }
+          { \sum_{n=0}^{N-1} \binom{N-1}{n} \rho^{n} 
+          \Big[
+            \frac{1}{2}\Big(\frac{1}{2}\Big)^{-(N-n)/2}\Gamma\Big(\frac{N-n}{2},\frac{\rho^2}{2}\Big)
+          \Big] } \\
+        &= \frac{ e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}  \sum_{n=0}^{N-1} \binom{N-1}{n}
+            \Big(\frac{\ptjtk}{\sqrt{2}}\Big)^{n}\Gamma\Big(\frac{N-n}{2},\frac{(\ptjtk)^2}{2}\Big) }
+          { \sum_{n=0}^{N-1} \binom{N-1}{n} 
+            \Big(\frac{\rho}{\sqrt{2}}\Big)^{n}\Gamma\Big(\frac{N-n}{2},\frac{\rho^2}{2}\Big) } \\
+        &= \frac{ e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)}  \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)}
+            \Big(\frac{\ptjtk}{\sqrt{2}}\Big)^{n}\Gamma\Big(\frac{N-n}{2},\frac{(\ptjtk)^2}{2}\Big) }
+          { \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} 
+            \Big(\frac{\rho}{\sqrt{2}}\Big)^{n}\Gamma\Big(\frac{N-n}{2},\frac{\rho^2}{2}\Big) } \\
+        \end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
