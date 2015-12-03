@@ -17,7 +17,7 @@ def incomplete_Gamma(a,x):
     return incomplete_G
 
 def log_y(rho,t,N,approx,alt):
-    # Take the logarithm of the summation term
+    # Take the logarithm of the summation term in equation 22 (or 53)
     if approx==False:
         if alt==True:
             return lambda x: (gammaln(N)-(gammaln(x+1)+gammaln(N-x))) + x*np.log(rho*t/np.sqrt(2)) + np.log(incomplete_Gamma((N-x)/2,0.5*(rho*t)**2))
@@ -30,7 +30,7 @@ def log_y(rho,t,N,approx,alt):
             return lambda x: (gammaln(N)-(gammaln(x+1)+gammaln(N-x))) - x*np.log(rho*t/np.sqrt(2)) + gammaln((x+1)/2)
 
 def exp_log_y(rho,t,N,log_peak,approx,alt):
-    # Take the exponential of the NORMALISED logarithm of the summation term
+    # Take the exponential of the NORMALISED logarithm of the summation term in equation 22 (or equation 53)
     if approx==False:
         if alt==True:
             return lambda x: np.exp(gammaln(N)-(gammaln(x+1)+gammaln(N-x)) + x*np.log(rho*t/np.sqrt(2)) + np.log(incomplete_Gamma((N-x)/2,0.5*(rho*t)**2)) - log_peak)
@@ -42,14 +42,31 @@ def exp_log_y(rho,t,N,log_peak,approx,alt):
         if alt==False:
             return lambda x: np.exp(gammaln(N)-(gammaln(x+1)+gammaln(N-x)) - x*np.log(rho*t/np.sqrt(2)) + gammaln((x+1)/2) - log_peak)
 
-NN = np.linspace(1000,10000,50) # number of dimensions
+NN = np.linspace(1000,100000,50) # number of dimensions
 rho = 10. # nominal SNR
 t = 0.9 # (t_j \cdot t_k)
-alt = True # alt=True --> rho^n*x^(N-n-1), alt=False --> rho^(N-n-1)*x^n (binomial expansion option)
+alt = True # binomial expansion option: alt=True --> rho^n*x^(N-n-1), alt=False --> rho^(N-n-1)*x^n
 
 keep = [[],[]] # probability
 
 for N in NN:
+    
+    # Summation terms in numerator f(n) and denominator g(n) in equation 22 (or 53) are calculated separately.
+    # First, we take the logarithm of each term f(n) in summation: \sum_{n=0]^{N-1} ln(f(n))
+    # Second, we find the maximum term in the logarithmic series = ln(f(n_max))
+    # Normalise the logarithmic series by subtracting ln(f(n_max)) from each term: 
+    #       [ln(f(0))-ln(f(n_max)),...,ln(f(N-1))-ln(f(n_max))]
+    #       = [ln(f(0)/f(n_max)),...,ln(f(N-1)/f(n_max))]
+    # Take the exponential: 
+    #       [exp(ln(f(0)/f(n_max))),...,exp(f(N-1)/f(n_max))]
+    #       = [f(0)/f(n_max),...,f(N-1)/f(n_max)]
+    #       = 1/f(n_max) * [f(0),...,f(N-1)]
+    # This is done for both numerator and denominator (where in the denominator, tjtk = 1).
+    # Finally, find the cumulative sum for numerator and denominator, and then divide the two. Multiply by remaining factors.
+    #       cumsum(numerator) / cumsum(denominator) * normalisation terms * exp(-1/2*rho^2(1-tjtk^2))
+    #       = cumsum( 1/f(n_max) * [f(0),...,f(N-1)] ) / cumsum( 1/g(m_max) * [g(0),...,g(N-1)] ) * f(n_max)/g(m_max) * exp(-1/2*rho^2(1-t^2))
+    #       = equation 22 or 53
+
     for alt in [True,False]:
         n = np.arange(0,N-1) # range of n in summation
 
@@ -60,8 +77,8 @@ for N in NN:
             idx_100 = np.where((n+1) <= 100)
             idx = np.where((n+1) > 100)
 
-        peak_num = max(log_y(rho,t,N,True,alt)(n[idx]))
-        peak_den = max(log_y(rho,1,N,True,alt)(n[idx]))
+        peak_num = max(log_y(rho,t,N,True,alt)(n[idx])) # max in log_y, this will be our normalisation term in numerator
+        peak_den = max(log_y(rho,1,N,True,alt)(n[idx])) # max in log_y, this will be our normalisation term in denominator
     
         exp_log_y_num = [exp_log_y(rho,t,N,peak_num,False,alt),exp_log_y(rho,t,N,peak_num,True,alt)] # [exp(log(x0/xm)),...,exp(log(xn/xm))]
         exp_log_y_den = [exp_log_y(rho,1,N,peak_den,False,alt),exp_log_y(rho,1,N,peak_den,True,alt)] # = [x0/xm,...,xn/xm)]
