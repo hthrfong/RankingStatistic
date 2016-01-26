@@ -304,13 +304,36 @@ To integrate $\int f(\theta) d\theta$, we can expand the exponential term into a
 		\Big]
 	\end{align}
 
-In the end, we concluded that doing the $\Delta\Omega$ approximation is fine because we don't pick up additional terms of $\rho$ and the answer doesn't change when we increase $N$.
+In the end, we concluded that doing the $\Delta\Omega$ approximation is fine because we don't pick up additional terms of $\rho$ and the answer doesn't change when we increase $N$. 
 
 Numerator only:
 
         \begin{align}
-        \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}\delta\theta \approx \Delta\theta + O(\Delta\theta^2)+...
+        \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}d(\delta\theta) \approx \Delta\theta + O(\Delta\theta^2)+...
         \end{align}
+        
+{\textbf{CHECKING THIS.}}
+
+	\begin{align}
+        \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}d(\delta\theta) = \int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \sum_{a=0}^{\infty} \frac{(\rho\rho_{obs,k}\cos(\theta+\delta\theta))^a}{a!}d(\delta\theta) \\
+        = \int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \Big( 1 + \rho\rho_{obs,k}\cos(\theta+\delta\theta) + \frac{(\rho\rho_{obs,k})^2}{2}\cos^2(\theta+\delta\theta) ... \Big) \\
+        = \Delta\theta + \Big\{\rho\rho_{obs,k}\sin(\theta+\delta\theta) + \frac{(\rho\rho_{obs,k})^2}{8}[2(\theta+\delta\theta) + \sin(2(\theta+\delta\theta))] + ... \Big\}\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
+        = \Delta\theta + \Big\{\rho\rho_{obs,k}2\cos\theta\sin\frac{1}{2}\Delta\theta + \frac{(\rho\rho_{obs,k})^2}{8}[2\Delta\theta + 2\cos2\theta\sin\Delta\theta] + ... \Big\}
+        \end{align}
+
+Taking various powers of $\cos(\theta+\delta\theta)$:
+	\begin{align}
+	\int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \cos^3(\theta+\delta\theta)d(\delta\theta) &= \frac{1}{12}(9\sin(\theta+\delta\theta)+\sin(3(\theta+\delta\theta)))\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
+	&=\frac{1}{12}(18\cos\theta\sin\frac{1}{2}\Delta\theta + 2\cos3\theta\sin\frac{3}{2}\Delta\theta)\\
+	\int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \cos^4(\theta+\delta\theta)d(\delta\theta) &= \frac{1}{32}(12(\theta+\delta\theta)+8\sin(2(\theta+\delta\theta))+\sin(4(\theta+\delta\theta)))\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
+	&=\frac{1}{32}(12\Delta\theta + 16\cos2\theta\sin\Delta\theta + 2\cos4\theta\sin2\Delta\theta\\
+	\int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \cos^5(\theta+\delta\theta)d(\delta\theta) &= \frac{5}{8}\sin(\theta+\delta\theta)+\frac{5}{48}\sin(3(\theta+\delta\theta))+\frac{1}{80}\sin(5(\theta+\delta\theta))\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
+	&= \frac{5}{4}\cos\theta\sin\frac{1}{2}\Delta\theta+\frac{5}{24}\cos3\theta\sin\frac{3}{2}\Delta\theta+\frac{1}{40}\cos5\theta\sin\frac{5}{2}\Delta\theta\\
+	\int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \cos^6(\theta+\delta\theta)d(\delta\theta) &= \frac{1}{192}(45\sin(2(\theta+\delta\theta))+9\sin(4(\theta+\delta\theta))\\ \notag&+\sin(6(\theta+\delta\theta))+60(\theta+\delta\theta)\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
+	&=\frac{1}{192}(90\cos2\theta\sin\Delta\theta+18\cos4\theta\sin2\Delta\theta+2\cos6\theta\sin3\Delta\theta+60\Delta\theta)
+	\end{align}
+
+If we take $\Delta\theta\rightarrow 0$, then the cosine and sine terms go to 0 as well. Only the even powers of $\cos^a(\theta+\delta\theta)$ have $\Delta\theta$ terms. In addition, we also have powers of $(\rho\rho_{ons,k})^a$ that are multiplied to this terms, so it seems that we do pick up additional powers of $\rho\rho_{obs,k}$. From the infinite sum, there is a $\frac{1}{a!}$ term that will eventually kill off subsequent terms such that they contribute negligibly to the infinite sum.
 
 \section{Alternate binomial expansion calculation}\label{section:alternate_binomial_expansion_calculations}
 
