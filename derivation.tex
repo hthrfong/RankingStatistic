@@ -127,6 +127,7 @@ In the limit of $n \rightarrow \infty$, $\Gamma(a,x) \rightarrow \Gamma(a)$. Thi
    { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n'} \Gamma\Big(\frac{n'+1}{2}\Big) } \\
    &= \frac{\tjtk^{N-1}}{e^{\frac{1}{2}\rho^2(1-\tjtk^2)}} \frac{ \sum_{n=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n+1)\Gamma(N-n)} \Big(\frac{\sqrt{2}}{\ptjtk}\Big)^{n} \Gamma\Big(\frac{n+1}{2}\Big) } 
    { \sum_{n'=0}^{N-1} \frac{\Gamma(N)}{\Gamma(n'+1)\Gamma(N-n')} \Big(\frac{\sqrt{2}}{\rho}\Big)^{n'} \Gamma\Big(\frac{n'+1}{2}\Big) }
+   \label{eqn: finalGammaeqn}
    \end{align}
    
 \section{Computing $P(\text{$\vec{s}$ recovered with $\vec{t}_k$}|\vec{s}(\vec\theta))$ in Python}
@@ -271,10 +272,12 @@ Here, we work out the probability where $|\vec n|$ depends on $\theta$, which is
 	\begin{align}
 	\rightarrow& \int_{\theta_1}^{\theta_2} \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k} - 2\rho\rho_{obs,k}\cos\theta)} \rho_{obs,k} d\rho_{obs,k} d\theta \\
 	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2}e^{\rho\rho_{obs,k}\cos\theta}d\theta \Big]d\rho_{obs,k}
+	\label{eqn:expcosx}
 	\end{align}
 
 To integrate $\int f(\theta) d\theta$, we can expand the exponential term into an infinite sum (because there is no straightforward analytic solution). Also use the definite integral $\int_0^{\infty} e^{-Ax^2}x^ndx = \frac{1}{2}\Gamma(\frac{n+1}{2})A^{-(n+1)/2}$ (link \href{https://en.wikipedia.org/wiki/List_of_integrals_of_exponential_functions}{here}).
 
+\begin{comment}
 	\begin{align}
 	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2} \sum_{a=0}^{\infty} \frac{(\rho\rho_{obs,k}\cos\theta)^a}{a!} d\theta \Big]d\rho_{obs,k} \\
 	=& \int_{0}^{\infty} \frac{1}{2\pi} e^{-\frac{1}{2}(\rho^2 + \rho^2_{obs,k})}\rho_{obs,k} \Big[\int_{\theta_1}^{\theta_2} 
@@ -304,15 +307,15 @@ To integrate $\int f(\theta) d\theta$, we can expand the exponential term into a
 		\Big]
 	\end{align}
 
-In the end, we concluded that doing the $\Delta\Omega$ approximation is fine because we don't pick up additional terms of $\rho$ and the answer doesn't change when we increase $N$. 
+In the end, we concluded that doing the $\Delta\Omega$ approximation is fine because we don't pick up additional terms of $\rho$ and the answer doesn't change when we increase $N$. {\bf Can we really say this?}
+\end{comment}
 
-Numerator only:
-
+Instead of $|\vec n|^2 = \rho^2 + \rho^2_{obs,k} - 2\rho\rho_{obs,k}\cos\theta$, let's try \\$|\vec n|^2 = \rho^2 + \rho^2_{obs,k} - 2\rho\rho_{obs,k}\cos(\theta+\delta\theta)$. Then the $\theta$ part of the integral in Eq. \ref{eqn:expcosx} becomes:
         \begin{align}
         \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}d(\delta\theta) \approx \Delta\theta + O(\Delta\theta^2)+...
         \end{align}
         
-{\textbf{CHECKING THIS.}}
+{\textbf{Expanding it out}}
 
 	\begin{align}
         \int_{\delta\theta=-\frac{1}{2}\Delta\theta}^{\delta\theta=+\frac{1}{2}\Delta\theta} e^{\rho\rho_{obs,k}\cos(\theta+\delta\theta)}d(\delta\theta) = \int_{-\frac{1}{2}\Delta\theta}^{+\frac{1}{2}\Delta\theta} \sum_{a=0}^{\infty} \frac{(\rho\rho_{obs,k}\cos(\theta+\delta\theta))^a}{a!}d(\delta\theta) \\
@@ -320,6 +323,8 @@ Numerator only:
         = \Delta\theta + \Big\{\rho\rho_{obs,k}\sin(\theta+\delta\theta) + \frac{(\rho\rho_{obs,k})^2}{8}[2(\theta+\delta\theta) + \sin(2(\theta+\delta\theta))] + ... \Big\}\Big|^{+\frac{1}{2}\Delta\theta}_{-\frac{1}{2}\Delta\theta}\\
         = \Delta\theta + \Big\{\rho\rho_{obs,k}2\cos\theta\sin\frac{1}{2}\Delta\theta + \frac{(\rho\rho_{obs,k})^2}{8}[2\Delta\theta + 2\cos2\theta\sin\Delta\theta] + ... \Big\}
         \end{align}
+        
+In next page, we expand and integrate out powers of $\cos(\theta+\delta\theta)$ beyond $a=2$.
 
 Taking various powers of $\cos(\theta+\delta\theta)$:
 	\begin{align}
@@ -335,7 +340,11 @@ Taking various powers of $\cos(\theta+\delta\theta)$:
 
 If we take $\Delta\theta\rightarrow 0$, then the cosine and sine terms go to 0 as well. Only the even powers of $\cos^a(\theta+\delta\theta)$ have $\Delta\theta$ terms. In addition, we also have powers of $(\rho\rho_{ons,k})^a$ that are multiplied to this terms, so it seems that we do pick up additional powers of $\rho\rho_{obs,k}$. From the infinite sum, there is a $\frac{1}{a!}$ term that will eventually kill off subsequent terms such that they contribute negligibly to the infinite sum.
 
+Since we do pick up additional powers of $\rho\rho_{obs,k}$, does that mean we cannot make the $\Delta\Omega=const$ assumption?
+
 \section{Alternate binomial expansion calculation}\label{section:alternate_binomial_expansion_calculations}
+
+Spoiler alert: The final expression works out to be the same result as Eq. \ref{eqn: finalGammaeqn} (confirmed by plotting in Python).
 
         \begin{align}
         &= \frac{\Delta\Omega}{(2\pi)^{N/2}} e^{-\frac{1}{2}\rho^2(1-(\vec{t}_j\cdot\vec{t}_k)^2)} \int_{-\ptjtk}^\infty  e^{-\frac{1}{2} x^2  } {(x+\ptjtk)^{N-1}} dx \\
